@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OddJob.ng — Get It Done</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:#00C27C; --green-d:#009E65; --lime:#D4FF4F;
+      --ink:#0D1117; --ink-2:#1A2230; --ink-3:#253347;
+      --mist:#F4F6F0; --white:#FFFFFF; --sand:#FFF8EE;
+      --orange:#FF6B35; --radius:14px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--ink); color:var(--white); overflow-x:hidden; }
+
+    /* ── NAV ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 6%;
+      background:rgba(13,17,23,0.85); backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      transition: padding .3s;
+    }
+    nav.scrolled { padding:12px 6%; }
+    .logo { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:var(--white); text-decoration:none; display:flex; align-items:center; gap:6px; }
+    .logo span { color:var(--green); }
+    .logo-dot { width:9px; height:9px; border-radius:50%; background:var(--lime); display:inline-block; animation:pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:.6;} }
+    nav ul { list-style:none; display:flex; gap:32px; }
+    nav ul li a { text-decoration:none; color:rgba(255,255,255,0.7); font-size:.92rem; transition:color .2s; }
+    nav ul li a:hover { color:var(--white); }
+    .nav-ctas { display:flex; gap:12px; align-items:center; }
+    .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.25); color:var(--white); padding:9px 20px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:.9rem; cursor:pointer; transition:all .2s; }
+    .btn-ghost:hover { border-color:var(--green); color:var(--green); }
+    .btn-primary { background:var(--green); border:none; color:var(--ink); padding:10px 22px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .btn-primary:hover { background:var(--lime); }
+    /* hamburger */
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .hamburger span { display:block; width:22px; height:2px; background:var(--white); border-radius:2px; transition:all .3s; }
+    .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity:0; }
+    .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:var(--ink); z-index:150; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; color:var(--white); text-decoration:none; transition:color .2s; }
+    .mobile-menu a:hover { color:var(--green); }
+    .mobile-menu-btns { display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+    .mobile-menu-btns button { width:200px; }
+
+    /* ── HERO ── */
+    .hero { min-height:100vh; display:flex; align-items:center; padding:120px 6% 80px; position:relative; overflow:hidden; }
+    .hero-bg { position:absolute; inset:0; z-index:0; background: radial-gradient(ellipse 70% 60% at 80% 50%,rgba(0,194,124,0.13) 0%,transparent 70%), radial-gradient(ellipse 40% 50% at 15% 80%,rgba(212,255,79,0.07) 0%,transparent 60%); }
+    .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:48px 48px; }
+    .hero-content { position:relative; z-index:1; max-width:680px; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(0,194,124,0.12); border:1px solid rgba(0,194,124,0.3); color:var(--green); padding:6px 14px; border-radius:30px; font-size:.82rem; font-weight:500; margin-bottom:28px; animation:fadeUp .6s ease both; }
+    .hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.4s infinite; }
+    h1 { font-family:'Syne',sans-serif; font-size:clamp(2.8rem,5.5vw,5rem); font-weight:800; line-height:1.05; letter-spacing:-0.02em; animation:fadeUp .6s .1s ease both; }
+    h1 .accent { color:var(--green); }
+    h1 .accent-lime { color:var(--lime); }
+    .hero-sub { margin-top:20px; color:rgba(255,255,255,0.65); font-size:1.1rem; line-height:1.7; max-width:500px; animation:fadeUp .6s .2s ease both; }
+
+    /* SEARCH BAR */
+    .hero-search { margin-top:32px; display:flex; gap:0; max-width:560px; animation:fadeUp .6s .25s ease both; }
+    .search-wrap { flex:1; position:relative; }
+    .search-wrap input { width:100%; padding:14px 18px 14px 44px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-right:none; border-radius:10px 0 0 10px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.95rem; outline:none; transition:border-color .2s; }
+    .search-wrap input::placeholder { color:rgba(255,255,255,0.4); }
+    .search-wrap input:focus { border-color:rgba(0,194,124,0.5); }
+    .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.4); font-size:1rem; pointer-events:none; }
+    .search-btn { padding:14px 28px; background:var(--green); color:var(--ink); border:none; border-radius:0 10px 10px 0; font-family:'DM Sans',sans-serif; font-size:.95rem; font-weight:600; cursor:pointer; transition:background .2s; white-space:nowrap; }
+    .search-btn:hover { background:var(--lime); }
+
+    .hero-actions { margin-top:20px; display:flex; gap:14px; flex-wrap:wrap; animation:fadeUp .6s .3s ease both; }
+    .btn-big { padding:15px 32px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600; cursor:pointer; transition:all .25s; }
+    .btn-big-primary { background:var(--green); color:var(--ink); border:none; }
+    .btn-big-primary:hover { background:var(--lime); transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,194,124,0.3); }
+    .btn-big-outline { background:transparent; border:1.5px solid rgba(255,255,255,0.22); color:var(--white); }
+    .btn-big-outline:hover { border-color:var(--white); transform:translateY(-2px); }
+    .hero-stats { margin-top:48px; display:flex; gap:40px; flex-wrap:wrap; animation:fadeUp .6s .4s ease both; }
+    .stat-num { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; }
+    .stat-num span { color:var(--green); }
+    .stat-label { font-size:.82rem; color:rgba(255,255,255,0.5); margin-top:2px; }
+
+    .hero-right { position:absolute; right:4%; top:50%; transform:translateY(-50%); z-index:1; display:flex; flex-direction:column; gap:16px; animation:fadeLeft .8s .3s ease both; }
+    @keyframes fadeLeft { from{opacity:0;transform:translateY(-50%) translateX(40px);} to{opacity:1;transform:translateY(-50%) translateX(0);} }
+    .job-card { background:var(--ink-2); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius); padding:18px 22px; width:300px; transition:transform .3s,box-shadow .3s; cursor:pointer; }
+    .job-card:hover { transform:translateX(-6px); box-shadow:0 16px 40px rgba(0,0,0,0.4); }
+    .card-top { display:flex; justify-content:space-between; align-items:flex-start; }
+    .card-emoji { font-size:1.6rem; }
+    .card-badge { font-size:.72rem; padding:3px 10px; border-radius:20px; font-weight:600; }
+    .badge-green  { background:rgba(0,194,124,0.15); color:var(--green); }
+    .badge-orange { background:rgba(255,107,53,0.15); color:var(--orange); }
+    .badge-lime   { background:rgba(212,255,79,0.12); color:var(--lime); }
+    .card-title { margin-top:10px; font-family:'Syne',sans-serif; font-size:.95rem; font-weight:600; }
+    .card-meta { margin-top:6px; font-size:.8rem; color:rgba(255,255,255,0.5); }
+    .card-footer { margin-top:14px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.07); padding-top:12px; }
+    .card-price { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:var(--green); }
+    .card-avatar { width:28px; height:28px; border-radius:50%; background:var(--ink-3); display:flex; align-items:center; justify-content:center; font-size:.75rem; color:rgba(255,255,255,0.6); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+
+    /* ── MARQUEE ── */
+    .marquee-section { background:var(--green); padding:14px 0; overflow:hidden; }
+    .marquee-track { display:flex; gap:48px; animation:marquee 22s linear infinite; white-space:nowrap; }
+    .marquee-item { font-family:'Syne',sans-serif; font-size:.85rem; font-weight:700; color:var(--ink); opacity:.8; display:flex; align-items:center; gap:10px; }
+    .marquee-item::after { content:'✦'; opacity:.4; }
+    @keyframes marquee { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+    /* ── SECTIONS ── */
+    .section { padding:96px 6%; }
+    .section-label { font-size:.78rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--green); margin-bottom:16px; }
+    .section-title { font-family:'Syne',sans-serif; font-size:clamp(1.8rem,3vw,2.8rem); font-weight:800; line-height:1.15; }
+    .section-sub { margin-top:14px; max-width:480px; font-size:1rem; color:rgba(255,255,255,0.55); line-height:1.7; }
+
+    /* reveal animation */
+    .reveal { opacity:0; transform:translateY(30px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ── STEPS ── */
+    .steps-grid { margin-top:60px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:24px; }
+    .step-card { background:var(--ink-2); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:32px 28px; position:relative; overflow:hidden; transition:border-color .3s,transform .3s; }
+    .step-card:hover { border-color:rgba(0,194,124,0.4); transform:translateY(-4px); }
+    .step-number { font-family:'Syne',sans-serif; font-size:3.5rem; font-weight:800; color:rgba(255,255,255,0.05); position:absolute; top:16px; right:20px; line-height:1; }
+    .step-icon { width:48px; height:48px; border-radius:12px; background:rgba(0,194,124,0.12); display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:20px; }
+    .step-card h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:10px; }
+    .step-card p { font-size:.9rem; color:rgba(255,255,255,0.55); line-height:1.65; }
+
+    /* ── CATEGORIES ── */
+    .categories-section { padding:96px 6%; background:var(--ink-2); }
+    .cat-grid { margin-top:50px; display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; }
+    .cat-card { background:var(--ink); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:24px 20px; text-align:center; cursor:pointer; transition:all .25s; }
+    .cat-card:hover, .cat-card.active { background:rgba(0,194,124,0.1); border-color:rgba(0,194,124,0.3); transform:translateY(-4px); }
+    .cat-card.active .cat-icon { transform:scale(1.15); }
+    .cat-icon { font-size:2rem; display:block; transition:transform .25s; }
+    .cat-name { margin-top:10px; font-size:.88rem; font-weight:500; }
+    .cat-count { margin-top:4px; font-size:.75rem; color:rgba(255,255,255,0.4); }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { margin-top:40px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .filter-select { padding:10px 16px; background:var(--ink-2); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; cursor:pointer; outline:none; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff66' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+    .filter-select:focus { border-color:var(--green); }
+    .filter-count { margin-left:auto; font-size:.85rem; color:rgba(255,255,255,0.45); }
+    #search-jobs { flex:1; min-width:200px; padding:10px 16px 10px 38px; background:var(--ink-2); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; outline:none; }
+    #search-jobs:focus { border-color:var(--green); }
+    .search-jobs-wrap { position:relative; flex:1; min-width:200px; }
+    .search-jobs-wrap .si { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.4); pointer-events:none; }
+
+    /* ── JOBS GRID ── */
+    .jobs-grid { margin-top:32px; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+    .fjob-card { background:var(--ink-2); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:26px; transition:all .25s; cursor:pointer; position:relative; }
+    .fjob-card:hover { border-color:rgba(0,194,124,0.3); transform:translateY(-4px); box-shadow:0 20px 50px rgba(0,0,0,0.3); }
+    .fjob-card.hidden { display:none; }
+    .fjob-top { display:flex; justify-content:space-between; align-items:center; }
+    .fjob-cat { font-size:.72rem; font-weight:600; padding:4px 10px; border-radius:20px; background:rgba(0,194,124,0.12); color:var(--green); }
+    .fjob-type { font-size:.75rem; color:rgba(255,255,255,0.4); }
+    .fjob-title { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; margin-top:14px; line-height:1.35; }
+    .fjob-desc { margin-top:8px; font-size:.85rem; color:rgba(255,255,255,0.5); line-height:1.6; }
+    .fjob-tags { margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; }
+    .tag { font-size:.72rem; padding:4px 10px; border-radius:20px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.55); }
+    .fjob-footer { margin-top:18px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.07); padding-top:16px; }
+    .fjob-budget { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; color:var(--green); }
+    .fjob-actions { display:flex; gap:8px; align-items:center; }
+    .fjob-btn { background:transparent; border:1px solid rgba(0,194,124,0.4); color:var(--green); padding:8px 18px; border-radius:8px; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .fjob-btn:hover { background:var(--green); color:var(--ink); }
+    .bookmark-btn { background:transparent; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.5); width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+    .bookmark-btn:hover, .bookmark-btn.saved { border-color:var(--orange); color:var(--orange); background:rgba(255,107,53,0.1); }
+    .no-results { grid-column:1/-1; text-align:center; padding:60px 20px; color:rgba(255,255,255,0.4); }
+    .no-results span { font-size:2.5rem; display:block; margin-bottom:12px; }
+
+    /* ── TESTIMONIALS ── */
+    .testi-section { padding:96px 6%; background:var(--ink-2); }
+    .testi-grid { margin-top:52px; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+    .testi-card { background:var(--ink); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:28px; }
+    .stars { color:var(--lime); font-size:1rem; letter-spacing:2px; margin-bottom:14px; }
+    .testi-text { font-size:.9rem; color:rgba(255,255,255,0.65); line-height:1.7; font-style:italic; }
+    .testi-author { margin-top:20px; display:flex; align-items:center; gap:12px; }
+    .author-ava { width:40px; height:40px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:.85rem; font-weight:700; color:var(--ink); flex-shrink:0; }
+    .author-name { font-weight:600; font-size:.9rem; }
+    .author-role { font-size:.78rem; color:rgba(255,255,255,0.45); margin-top:2px; }
+
+    /* ── CTA ── */
+    .cta-section { margin:0 6% 96px; background:linear-gradient(135deg,var(--green) 0%,var(--green-d) 50%,#007a50 100%); border-radius:24px; padding:72px 60px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:32px; position:relative; overflow:hidden; }
+    .cta-bg-circle { position:absolute; border-radius:50%; opacity:.12; background:var(--lime); }
+    .cta-bg-circle.c1 { width:300px; height:300px; top:-80px; right:60px; }
+    .cta-bg-circle.c2 { width:180px; height:180px; bottom:-60px; right:200px; }
+    .cta-text { position:relative; }
+    .cta-text h2 { font-family:'Syne',sans-serif; font-size:clamp(1.6rem,2.8vw,2.4rem); font-weight:800; color:var(--ink); line-height:1.15; }
+    .cta-text p { margin-top:10px; color:rgba(0,0,0,0.6); font-size:1rem; }
+    .cta-btns { display:flex; gap:14px; flex-wrap:wrap; position:relative; }
+    .btn-dark { background:var(--ink); color:var(--white); border:none; padding:14px 28px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:.95rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .btn-dark:hover { background:var(--ink-2); transform:translateY(-2px); }
+    .btn-light { background:rgba(255,255,255,0.2); color:var(--ink); border:1.5px solid rgba(0,0,0,0.15); padding:14px 28px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:.95rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .btn-light:hover { background:rgba(255,255,255,0.35); }
+
+    /* ── FOOTER ── */
+    footer { background:var(--ink); border-top:1px solid rgba(255,255,255,0.07); padding:60px 6% 32px; }
+    .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
+    .footer-brand p { margin-top:14px; font-size:.88rem; color:rgba(255,255,255,0.45); line-height:1.7; max-width:280px; }
+    .footer-socials { display:flex; gap:12px; margin-top:20px; }
+    .social-btn { width:36px; height:36px; border-radius:8px; background:rgba(255,255,255,0.07); display:flex; align-items:center; justify-content:center; font-size:.85rem; cursor:pointer; transition:background .2s; text-decoration:none; color:var(--white); }
+    .social-btn:hover { background:var(--green); }
+    .footer-col h4 { font-family:'Syne',sans-serif; font-size:.88rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:18px; }
+    .footer-col ul { list-style:none; }
+    .footer-col ul li { margin-bottom:10px; }
+    .footer-col ul li a { text-decoration:none; color:rgba(255,255,255,0.45); font-size:.86rem; transition:color .2s; }
+    .footer-col ul li a:hover { color:var(--green); }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; flex-wrap:wrap; gap:12px; }
+    .footer-bottom p { font-size:.82rem; color:rgba(255,255,255,0.3); }
+
+    /* ── MODALS ── */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:500; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(6px); }
+    .modal-overlay.open { display:flex; animation:fadeIn .2s ease; }
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+    .modal { background:var(--ink-2); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:40px; width:100%; max-width:520px; position:relative; max-height:90vh; overflow-y:auto; animation:slideUp .3s ease; }
+    @keyframes slideUp { from{transform:translateY(30px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+    .modal-close { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.08); border:none; color:var(--white); width:32px; height:32px; border-radius:8px; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+    .modal-close:hover { background:rgba(255,255,255,0.15); }
+    .modal h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; margin-bottom:8px; }
+    .modal p.sub { color:rgba(255,255,255,0.5); font-size:.9rem; margin-bottom:28px; }
+
+    /* Auth tabs */
+    .auth-tabs { display:flex; gap:0; margin-bottom:28px; background:rgba(255,255,255,0.05); border-radius:10px; padding:4px; }
+    .auth-tab { flex:1; padding:10px; text-align:center; border:none; background:transparent; color:rgba(255,255,255,0.5); font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:500; cursor:pointer; border-radius:8px; transition:all .2s; }
+    .auth-tab.active { background:var(--green); color:var(--ink); font-weight:600; }
+
+    /* Form elements */
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; font-size:.85rem; color:rgba(255,255,255,0.65); margin-bottom:8px; font-weight:500; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.92rem; outline:none; transition:border-color .2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--green); }
+    .form-group textarea { resize:vertical; min-height:100px; }
+    .form-group select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff66' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; background-color:rgba(255,255,255,0.06); cursor:pointer; }
+    .form-group select option { background:var(--ink-2); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-submit { width:100%; padding:14px; background:var(--green); border:none; border-radius:10px; color:var(--ink); font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:all .2s; margin-top:8px; }
+    .form-submit:hover { background:var(--lime); transform:translateY(-1px); }
+    .form-alt { text-align:center; margin-top:16px; font-size:.85rem; color:rgba(255,255,255,0.45); }
+    .form-alt a { color:var(--green); cursor:pointer; text-decoration:none; }
+    .form-alt a:hover { text-decoration:underline; }
+    .input-error { border-color:#ff4d4d !important; }
+    .error-msg { color:#ff6b6b; font-size:.78rem; margin-top:5px; display:none; }
+    .error-msg.show { display:block; }
+
+    /* Step indicator */
+    .step-indicator { display:flex; align-items:center; gap:8px; margin-bottom:28px; }
+    .step-dot { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; color:rgba(255,255,255,0.4); transition:all .3s; flex-shrink:0; }
+    .step-dot.active { background:var(--green); border-color:var(--green); color:var(--ink); }
+    .step-dot.done { background:rgba(0,194,124,0.2); border-color:var(--green); color:var(--green); }
+    .step-line { flex:1; height:2px; background:rgba(255,255,255,0.1); border-radius:1px; }
+    .step-line.done { background:var(--green); }
+    .form-step { display:none; }
+    .form-step.active { display:block; }
+
+    /* Apply modal job info */
+    .apply-job-info { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px 20px; margin-bottom:24px; }
+    .apply-job-info h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+    .apply-job-meta { margin-top:6px; font-size:.82rem; color:rgba(255,255,255,0.5); display:flex; gap:16px; flex-wrap:wrap; }
+    .apply-job-meta span { display:flex; align-items:center; gap:5px; }
+
+    /* ── TOAST ── */
+    #toast-container { position:fixed; bottom:28px; right:28px; z-index:999; display:flex; flex-direction:column; gap:10px; pointer-events:none; }
+    .toast { display:flex; align-items:center; gap:12px; padding:14px 20px; border-radius:12px; font-size:.9rem; font-weight:500; min-width:280px; max-width:380px; pointer-events:all; animation:toastIn .3s ease; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+    .toast.success { background:#0d2b1f; border:1px solid rgba(0,194,124,0.3); color:var(--white); }
+    .toast.error { background:#2b0d0d; border:1px solid rgba(255,77,77,0.3); color:var(--white); }
+    .toast.info { background:var(--ink-3); border:1px solid rgba(255,255,255,0.12); color:var(--white); }
+    .toast-icon { font-size:1.1rem; flex-shrink:0; }
+    .toast-msg { flex:1; }
+    .toast-close { background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:1rem; padding:0 0 0 8px; }
+    @keyframes toastIn { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:translateX(0);} }
+    @keyframes toastOut { from{opacity:1;transform:translateX(0);} to{opacity:0;transform:translateX(20px);} }
+
+    /* ── BACK TO TOP ── */
+    #back-top { position:fixed; bottom:88px; right:28px; width:44px; height:44px; background:var(--ink-3); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:var(--white); font-size:1.1rem; cursor:pointer; z-index:100; display:none; align-items:center; justify-content:center; transition:all .2s; }
+    #back-top.visible { display:flex; }
+    #back-top:hover { background:var(--green); color:var(--ink); border-color:var(--green); }
+
+    /* ── MOBILE ── */
+    @media (max-width:900px) {
+      .hero-right { display:none; }
+      .footer-grid { grid-template-columns:1fr 1fr; }
+      nav ul { display:none; }
+      .nav-ctas { display:none; }
+      .hamburger { display:flex; }
+    }
+    @media (max-width:600px) {
+      .footer-grid { grid-template-columns:1fr; }
+      .cta-section { padding:48px 28px; }
+      .hero-stats { gap:28px; }
+      .form-row { grid-template-columns:1fr; }
+      .modal { padding:28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── MOBILE MENU ── -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how" onclick="closeMobile()">How it Works</a>
+  <a href="#categories" onclick="closeMobile()">Categories</a>
+  <a href="#jobs" onclick="closeMobile()">Browse Jobs</a>
+  <a href="#about" onclick="closeMobile()">About</a>
+  <div class="mobile-menu-btns">
+    <button class="btn-ghost" style="width:200px" onclick="openModal('authModal');closeMobile()">Log In</button>
+    <button class="btn-primary" style="width:200px;padding:12px" onclick="openModal('postJobModal');closeMobile()">Post a Job</button>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav id="mainNav">
+  <a href="#" class="logo">Odd<span>Job</span><span class="logo-dot"></span><span style="color:rgba(255,255,255,0.35)">.ng</span></a>
+  <ul>
+    <li><a href="#how">How it Works</a></li>
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#jobs">Browse Jobs</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-ctas">
+    <button class="btn-ghost" onclick="openModal('authModal')">Log In</button>
+    <button class="btn-primary" onclick="openModal('postJobModal')">Post a Job</button>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🇳🇬 Nigeria's #1 Gig Platform</div>
+    <h1>Find Talent.<br>Get <span class="accent">Paid</span>.<br><span class="accent-lime">Hustle Smart.</span></h1>
+    <p class="hero-sub">OddJob.ng connects skilled Nigerians with clients who need work done — from graphic design and coding to plumbing, event planning, and beyond.</p>
+    <div class="hero-search">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="heroSearch" placeholder="Search jobs, skills, or services..." autocomplete="off" />
+      </div>
+      <button class="search-btn" onclick="doHeroSearch()">Search</button>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-big btn-big-primary" onclick="document.getElementById('jobs').scrollIntoView({behavior:'smooth'})">Browse Gigs</button>
+      <button class="btn-big btn-big-outline" onclick="openModal('freelancerModal')">Start Earning →</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num" data-target="42000" data-suffix="K+">0</div><div class="stat-label">Registered Freelancers</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="18000" data-suffix="K+">0</div><div class="stat-label">Jobs Completed</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="2" data-prefix="₦" data-suffix="B+">0</div><div class="stat-label">Paid to Talents</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="job-card"><div class="card-top"><span class="card-emoji">🎨</span><span class="card-badge badge-green">Open</span></div><div class="card-title">Brand Identity Design</div><div class="card-meta">Lagos · Remote OK · Posted 2h ago</div><div class="card-footer"><span class="card-price">₦85,000</span><div class="card-avatar">AO</div></div></div>
+    <div class="job-card"><div class="card-top"><span class="card-emoji">⚡</span><span class="card-badge badge-orange">Urgent</span></div><div class="card-title">Electrician — Office Rewire</div><div class="card-meta">Abuja · On-site · Posted 30m ago</div><div class="card-footer"><span class="card-price">₦45,000</span><div class="card-avatar">MK</div></div></div>
+    <div class="job-card"><div class="card-top"><span class="card-emoji">💻</span><span class="card-badge badge-lime">Featured</span></div><div class="card-title">React Developer — 3 months</div><div class="card-meta">Remote · Full-time gig · Posted 5h ago</div><div class="card-footer"><span class="card-price">₦300,000</span><div class="card-avatar">TF</div></div></div>
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">Web Development</span><span class="marquee-item">Graphic Design</span><span class="marquee-item">Plumbing</span><span class="marquee-item">Event Planning</span><span class="marquee-item">Photography</span><span class="marquee-item">Copywriting</span><span class="marquee-item">Tailoring</span><span class="marquee-item">Carpentry</span><span class="marquee-item">Social Media</span><span class="marquee-item">Data Entry</span><span class="marquee-item">Catering</span><span class="marquee-item">Video Editing</span>
+    <span class="marquee-item">Web Development</span><span class="marquee-item">Graphic Design</span><span class="marquee-item">Plumbing</span><span class="marquee-item">Event Planning</span><span class="marquee-item">Photography</span><span class="marquee-item">Copywriting</span><span class="marquee-item">Tailoring</span><span class="marquee-item">Carpentry</span><span class="marquee-item">Social Media</span><span class="marquee-item">Data Entry</span><span class="marquee-item">Catering</span><span class="marquee-item">Video Editing</span>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="section" id="how">
+  <div class="section-label reveal">How It Works</div>
+  <h2 class="section-title reveal">Simple. Fast. Secure.</h2>
+  <p class="section-sub reveal">Whether you're looking for work or hiring — OddJob.ng makes the whole process painless.</p>
+  <div class="steps-grid">
+    <div class="step-card reveal"><div class="step-number">01</div><div class="step-icon">📝</div><h3>Post or Apply</h3><p>Clients post jobs in minutes. Freelancers browse and apply with a single tap. No long forms, no gatekeeping.</p></div>
+    <div class="step-card reveal"><div class="step-number">02</div><div class="step-icon">🤝</div><h3>Match & Connect</h3><p>Our smart matching connects you with the right talent or client based on skill, location, and budget.</p></div>
+    <div class="step-card reveal"><div class="step-number">03</div><div class="step-icon">🔒</div><h3>Secure Escrow</h3><p>Payment is held safely in escrow until the job is done. No more stories of clients disappearing with work.</p></div>
+    <div class="step-card reveal"><div class="step-number">04</div><div class="step-icon">💸</div><h3>Get Paid Instantly</h3><p>Once approved, money hits your bank account or wallet within minutes. Naira, always.</p></div>
+  </div>
+</section>
+
+<!-- ── CATEGORIES ── -->
+<section class="categories-section" id="categories">
+  <div class="section-label reveal">Explore Categories</div>
+  <h2 class="section-title reveal">Every Skill Has a Market</h2>
+  <p class="section-sub reveal">From white-collar tech to blue-collar trades — if you can do it, there's someone on OddJob.ng who needs it.</p>
+  <div class="cat-grid" id="catGrid">
+    <div class="cat-card" data-cat="All" onclick="filterByCategory(this,'All')"><span class="cat-icon">⚡</span><div class="cat-name">All Jobs</div><div class="cat-count">21,930 jobs</div></div>
+    <div class="cat-card" data-cat="Tech & Dev" onclick="filterByCategory(this,'Tech & Dev')"><span class="cat-icon">💻</span><div class="cat-name">Tech & Dev</div><div class="cat-count">4,820 jobs</div></div>
+    <div class="cat-card" data-cat="Design" onclick="filterByCategory(this,'Design')"><span class="cat-icon">🎨</span><div class="cat-name">Design</div><div class="cat-count">3,110 jobs</div></div>
+    <div class="cat-card" data-cat="Writing" onclick="filterByCategory(this,'Writing')"><span class="cat-icon">✍️</span><div class="cat-name">Writing</div><div class="cat-count">2,560 jobs</div></div>
+    <div class="cat-card" data-cat="Photography" onclick="filterByCategory(this,'Photography')"><span class="cat-icon">📷</span><div class="cat-name">Photography</div><div class="cat-count">1,340 jobs</div></div>
+    <div class="cat-card" data-cat="Repairs" onclick="filterByCategory(this,'Repairs')"><span class="cat-icon">🔧</span><div class="cat-name">Repairs</div><div class="cat-count">2,880 jobs</div></div>
+    <div class="cat-card" data-cat="Catering" onclick="filterByCategory(this,'Catering')"><span class="cat-icon">🍳</span><div class="cat-name">Catering</div><div class="cat-count">970 jobs</div></div>
+    <div class="cat-card" data-cat="Events" onclick="filterByCategory(this,'Events')"><span class="cat-icon">🎉</span><div class="cat-name">Events</div><div class="cat-count">1,200 jobs</div></div>
+    <div class="cat-card" data-cat="Delivery" onclick="filterByCategory(this,'Delivery')"><span class="cat-icon">🚚</span><div class="cat-name">Delivery</div><div class="cat-count">3,400 jobs</div></div>
+    <div class="cat-card" data-cat="Cleaning" onclick="filterByCategory(this,'Cleaning')"><span class="cat-icon">🧹</span><div class="cat-name">Cleaning</div><div class="cat-count">1,760 jobs</div></div>
+    <div class="cat-card" data-cat="Finance" onclick="filterByCategory(this,'Finance')"><span class="cat-icon">📊</span><div class="cat-name">Finance</div><div class="cat-count">890 jobs</div></div>
+    <div class="cat-card" data-cat="Fashion" onclick="filterByCategory(this,'Fashion')"><span class="cat-icon">👗</span><div class="cat-name">Fashion</div><div class="cat-count">1,050 jobs</div></div>
+    <div class="cat-card" data-cat="Marketing" onclick="filterByCategory(this,'Marketing')"><span class="cat-icon">📱</span><div class="cat-name">Marketing</div><div class="cat-count">2,100 jobs</div></div>
+  </div>
+</section>
+
+<!-- ── FEATURED JOBS ── -->
+<section class="section" id="jobs">
+  <div class="section-label reveal">Featured Jobs</div>
+  <h2 class="section-title reveal">Hot Gigs Right Now</h2>
+  <p class="section-sub reveal">Fresh opportunities posted by verified clients across Nigeria.</p>
+
+  <div class="filter-bar reveal">
+    <div class="search-jobs-wrap">
+      <span class="si">🔍</span>
+      <input type="text" id="search-jobs" placeholder="Search jobs..." oninput="filterJobs()" />
+    </div>
+    <select class="filter-select" id="filter-location" onchange="filterJobs()">
+      <option value="">All Locations</option>
+      <option value="Remote">Remote</option>
+      <option value="Lagos">Lagos</option>
+      <option value="Abuja">Abuja</option>
+      <option value="Kano">Kano</option>
+      <option value="PH">Port Harcourt</option>
+    </select>
+    <select class="filter-select" id="filter-type" onchange="filterJobs()">
+      <option value="">All Types</option>
+      <option value="Remote">Remote</option>
+      <option value="On-site">On-site</option>
+      <option value="Ongoing">Ongoing</option>
+      <option value="One-off">One-off</option>
+    </select>
+    <span class="filter-count" id="filter-count">6 jobs found</span>
+  </div>
+
+  <div class="jobs-grid" id="jobsGrid">
+    <div class="fjob-card reveal" data-cat="Tech & Dev" data-location="Remote" data-type="Remote" data-title="Full-Stack Developer for Fintech Startup" data-desc="We need a Node.js + React developer to build our MVP lending platform.">
+      <div class="fjob-top"><span class="fjob-cat">Tech & Dev</span><span class="fjob-type">Remote · Contract</span></div>
+      <div class="fjob-title">Full-Stack Developer for Fintech Startup</div>
+      <div class="fjob-desc">We need a Node.js + React developer to build our MVP lending platform. Must be available immediately.</div>
+      <div class="fjob-tags"><span class="tag">Node.js</span><span class="tag">React</span><span class="tag">MongoDB</span></div>
+      <div class="fjob-footer"><span class="fjob-budget">₦450,000 / mo</span><div class="fjob-actions"><button class="bookmark-btn" onclick="toggleBookmark(this,event)" title="Save job">🔖</button><button class="fjob-btn" onclick="openApply(this)">Apply Now</button></div></div>
+    </div>
+    <div class="fjob-card reveal" data-cat="Design" data-location="Remote" data-type="One-off" data-title="UI/UX Design for Mobile App — 10 Screens" data-desc="Looking for a clean, modern mobile app design for our food delivery service.">
+      <div class="fjob-top"><span class="fjob-cat">Design</span><span class="fjob-type">Remote · One-off</span></div>
+      <div class="fjob-title">UI/UX Design for Mobile App — 10 Screens</div>
+      <div class="fjob-desc">Looking for a clean, modern mobile app design for our food delivery service. Figma deliverables required.</div>
+      <div class="fjob-tags"><span class="tag">Figma</span><span class="tag">Mobile</span><span class="tag">UX</span></div>
+      <div class="fjob-footer"><span class="fjob-budget">₦120,000</span><div class="fjob-actions"><button class="bookmark-btn" onclick="toggleBookmark(this,event)" title="Save job">🔖</button><button class="fjob-btn" onclick="openApply(this)">Apply Now</button></div></div>
+    </div>
+    <div class="fjob-card reveal" data-cat="Events" data-location="Lagos" data-type="On-site" data-title="Event Coordinator — Corporate Dinner (200 pax)" data-desc="Planning a formal dinner for 200 guests at Eko Hotel.">
+      <div class="fjob-top"><span class="fjob-cat">Events</span><span class="fjob-type">Lagos · On-site</span></div>
+      <div class="fjob-title">Event Coordinator — Corporate Dinner (200 pax)</div>
+      <div class="fjob-desc">Planning a formal dinner for 200 guests at Eko Hotel. Need an experienced coordinator who can manage vendors.</div>
+      <div class="fjob-tags"><span class="tag">Coordination</span><span class="tag">Vendor Mgmt</span><span class="tag">Lagos</span></div>
+      <div class="fjob-footer"><span class="fjob-budget">₦200,000</span><div class="fjob-actions"><button class="bookmark-btn" onclick="toggleBookmark(this,event)" title="Save job">🔖</button><button class="fjob-btn" onclick="openApply(this)">Apply Now</button></div></div>
+    </div>
+    <div class="fjob-card reveal" data-cat="Repairs" data-location="Abuja" data-type="On-site" data-title="Certified Electrician — 3-Bedroom Installation" data-desc="Complete electrical installation for new 3-bedroom flat in Gwarinpa.">
+      <div class="fjob-top"><span class="fjob-cat">Repairs</span><span class="fjob-type">Abuja · On-site</span></div>
+      <div class="fjob-title">Certified Electrician — 3-Bedroom Installation</div>
+      <div class="fjob-desc">Complete electrical installation for new 3-bedroom flat in Gwarinpa. Must be registered with COREN.</div>
+      <div class="fjob-tags"><span class="tag">Electrical</span><span class="tag">COREN</span><span class="tag">Abuja</span></div>
+      <div class="fjob-footer"><span class="fjob-budget">₦180,000</span><div class="fjob-actions"><button class="bookmark-btn" onclick="toggleBookmark(this,event)" title="Save job">🔖</button><button class="fjob-btn" onclick="openApply(this)">Apply Now</button></div></div>
+    </div>
+    <div class="fjob-card reveal" data-cat="Writing" data-location="Remote" data-type="Ongoing" data-title="Content Writer — Finance & Business Niche" data-desc="We publish 20 articles/month covering African business, finance and tech.">
+      <div class="fjob-top"><span class="fjob-cat">Writing</span><span class="fjob-type">Remote · Ongoing</span></div>
+      <div class="fjob-title">Content Writer — Finance & Business Niche</div>
+      <div class="fjob-desc">We publish 20 articles/month covering African business, finance and tech. Need a sharp, fast writer.</div>
+      <div class="fjob-tags"><span class="tag">SEO</span><span class="tag">Finance</span><span class="tag">Long-form</span></div>
+      <div class="fjob-footer"><span class="fjob-budget">₦5,000 / article</span><div class="fjob-actions"><button class="bookmark-btn" onclick="toggleBookmark(this,event)" title="Save job">🔖</button><button class="fjob-btn" onclick="openApply(this)">Apply Now</button></div></div>
+    </div>
+    <div class="fjob-card reveal" data-cat="Marketing" data-location="Remote" data-type="Remote" data-title="Social Media Manager — Fashion Brand" data-desc="Manage Instagram, TikTok, and Twitter for a growing Lagos fashion label.">
+      <div class="fjob-top"><span class="fjob-cat">Marketing</span><span class="fjob-type">Remote · Part-time</span></div>
+      <div class="fjob-title">Social Media Manager — Fashion Brand</div>
+      <div class="fjob-desc">Manage Instagram, TikTok, and Twitter for a growing Lagos fashion label. Strategy + content creation required.</div>
+      <div class="fjob-tags"><span class="tag">Instagram</span><span class="tag">TikTok</span><span class="tag">Content</span></div>
+      <div class="fjob-footer"><span class="fjob-budget">₦80,000 / mo</span><div class="fjob-actions"><button class="bookmark-btn" onclick="toggleBookmark(this,event)" title="Save job">🔖</button><button class="fjob-btn" onclick="openApply(this)">Apply Now</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testi-section" id="about">
+  <div class="section-label reveal">What People Say</div>
+  <h2 class="section-title reveal">Trusted by Thousands</h2>
+  <div class="testi-grid">
+    <div class="testi-card reveal"><div class="stars">★★★★★</div><p class="testi-text">"I got my first client within 48 hours of signing up. OddJob.ng is literally changing the way I do business as a freelance developer in Ibadan."</p><div class="testi-author"><div class="author-ava">KA</div><div><div class="author-name">Kunle Adeyemi</div><div class="author-role">Freelance Developer · Ibadan</div></div></div></div>
+    <div class="testi-card reveal"><div class="stars">★★★★★</div><p class="testi-text">"The escrow feature gave me the confidence to hire. I used to be scared of paying strangers online — not anymore. Platform is solid."</p><div class="testi-author"><div class="author-ava" style="background:var(--orange)">NE</div><div><div class="author-name">Ngozi Ezekwesili</div><div class="author-role">CEO, Zuri Décor · Lagos</div></div></div></div>
+    <div class="testi-card reveal"><div class="stars">★★★★★</div><p class="testi-text">"As a tailor in Kano, I never thought I could get clients outside my state. OddJob.ng proved me wrong. I've shipped 3 custom orders to Abuja this month alone."</p><div class="testi-author"><div class="author-ava" style="background:var(--lime);color:var(--ink)">HM</div><div><div class="author-name">Halima Musa</div><div class="author-role">Fashion Designer · Kano</div></div></div></div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<div class="cta-section reveal">
+  <div class="cta-bg-circle c1"></div><div class="cta-bg-circle c2"></div>
+  <div class="cta-text"><h2>Ready to Get Started?<br>Nigeria is Waiting.</h2><p>Join 42,000+ Nigerians already hustling smarter on OddJob.ng</p></div>
+  <div class="cta-btns">
+    <button class="btn-dark" onclick="openModal('postJobModal')">Post a Job</button>
+    <button class="btn-light" onclick="openModal('freelancerModal')">Become a Freelancer</button>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">Odd<span>Job</span><span class="logo-dot"></span><span style="color:rgba(255,255,255,0.35)">.ng</span></a>
+      <p>Nigeria's leading platform connecting skilled freelancers with clients across every industry and city.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn">𝕏</a><a href="#" class="social-btn">in</a><a href="#" class="social-btn">ig</a><a href="#" class="social-btn">▶</a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>For Clients</h4><ul><li><a href="#" onclick="openModal('postJobModal');return false">Post a Job</a></li><li><a href="#">Browse Freelancers</a></li><li><a href="#how">How It Works</a></li><li><a href="#">Pricing</a></li><li><a href="#">Enterprise</a></li></ul></div>
+    <div class="footer-col"><h4>For Freelancers</h4><ul><li><a href="#jobs">Find Jobs</a></li><li><a href="#" onclick="openModal('freelancerModal');return false">Create Profile</a></li><li><a href="#">Success Stories</a></li><li><a href="#">Skill Assessments</a></li><li><a href="#">Earning Tips</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Press Kit</a></li><li><a href="#">Contact</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 OddJob.ng — All rights reserved. Made with ❤️ in Nigeria 🇳🇬</p>
+    <p><a href="#" style="color:rgba(255,255,255,0.3);text-decoration:none;margin-right:16px">Privacy Policy</a><a href="#" style="color:rgba(255,255,255,0.3);text-decoration:none">Terms of Service</a></p>
+  </div>
+</footer>
+
+<!-- ── BACK TO TOP ── -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: AUTH (Login / Signup) -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="authModal" onclick="overlayClick(event,'authModal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    <h2 id="authTitle">Welcome Back 👋</h2>
+    <p class="sub" id="authSub">Log in to your OddJob.ng account</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Log In</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-group"><label>Email Address</label><input type="email" id="loginEmail" placeholder="you@example.com" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password" /></div>
+      <button class="form-submit" onclick="handleLogin()">Log In to OddJob.ng</button>
+      <p class="form-alt">Forgot your password? <a href="#" onclick="showToast('Password reset link sent!','success')">Reset it here</a></p>
+    </div>
+    <!-- SIGNUP FORM -->
+    <div id="signupForm" style="display:none">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" id="signupFirst" placeholder="Kunle" /></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="signupLast" placeholder="Adeyemi" /></div>
+      </div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="signupEmail" placeholder="you@example.com" /></div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="signupPhone" placeholder="0801 234 5678" /></div>
+      <div class="form-group"><label>I am a…</label>
+        <select id="signupRole">
+          <option value="">Select your role</option>
+          <option value="freelancer">Freelancer — I want to find work</option>
+          <option value="client">Client — I want to hire talent</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Create a strong password" /></div>
+      <button class="form-submit" onclick="handleSignup()">Create My Account</button>
+      <p class="form-alt">By signing up, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: APPLY FOR JOB -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="applyModal" onclick="overlayClick(event,'applyModal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('applyModal')">✕</button>
+    <h2>Apply for this Job</h2>
+    <p class="sub">Submit your proposal to the client</p>
+    <div class="apply-job-info" id="applyJobInfo">
+      <h3 id="applyJobTitle">Job Title</h3>
+      <div class="apply-job-meta"><span>📍 <span id="applyJobLoc">Location</span></span><span>💼 <span id="applyJobType">Type</span></span></div>
+    </div>
+    <div class="form-group"><label>Your Full Name</label><input type="text" id="applyName" placeholder="Kunle Adeyemi" /></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="applyEmail" placeholder="you@example.com" /></div>
+    <div class="form-group"><label>Phone Number</label><input type="tel" id="applyPhone" placeholder="0801 234 5678" /></div>
+    <div class="form-group"><label>Cover Letter / Proposal</label><textarea id="applyCover" placeholder="Tell the client why you're the best fit for this job. Mention relevant experience, your approach, and timeline..."></textarea></div>
+    <div class="form-group"><label>Your Rate / Bid (₦)</label><input type="text" id="applyRate" placeholder="e.g. 120,000" /></div>
+    <button class="form-submit" onclick="handleApply()">Submit Application 🚀</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: POST A JOB (multi-step) -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="postJobModal" onclick="overlayClick(event,'postJobModal')">
+  <div class="modal" style="max-width:580px">
+    <button class="modal-close" onclick="closeModal('postJobModal')">✕</button>
+    <h2>Post a Job</h2>
+    <p class="sub">Find the right talent in minutes</p>
+    <div class="step-indicator" id="postJobStepIndicator">
+      <div class="step-dot active" id="pjDot1">1</div>
+      <div class="step-line" id="pjLine1"></div>
+      <div class="step-dot" id="pjDot2">2</div>
+      <div class="step-line" id="pjLine2"></div>
+      <div class="step-dot" id="pjDot3">3</div>
+    </div>
+    <!-- Step 1 -->
+    <div class="form-step active" id="pjStep1">
+      <div class="form-group"><label>Job Title *</label><input type="text" id="pjTitle" placeholder="e.g. React Developer for E-commerce Site" /><div class="error-msg" id="pjTitleErr">Please enter a job title</div></div>
+      <div class="form-group"><label>Category *</label>
+        <select id="pjCategory">
+          <option value="">Select a category</option>
+          <option>Tech & Dev</option><option>Design</option><option>Writing</option><option>Photography</option>
+          <option>Repairs</option><option>Catering</option><option>Events</option><option>Delivery</option>
+          <option>Cleaning</option><option>Finance</option><option>Fashion</option><option>Marketing</option>
+        </select>
+        <div class="error-msg" id="pjCatErr">Please select a category</div>
+      </div>
+      <div class="form-group"><label>Job Description *</label><textarea id="pjDesc" placeholder="Describe the job in detail. What needs to be done? Any specific requirements or qualifications?"></textarea><div class="error-msg" id="pjDescErr">Please describe the job</div></div>
+      <button class="form-submit" onclick="pjNext(1)">Next: Budget & Location →</button>
+    </div>
+    <!-- Step 2 -->
+    <div class="form-step" id="pjStep2">
+      <div class="form-row">
+        <div class="form-group"><label>Budget (₦) *</label><input type="text" id="pjBudget" placeholder="e.g. 150,000" /><div class="error-msg" id="pjBudgetErr">Please enter your budget</div></div>
+        <div class="form-group"><label>Payment Type</label>
+          <select id="pjPayType"><option>Fixed Price</option><option>Per Hour</option><option>Per Month</option><option>Negotiable</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Location *</label>
+          <select id="pjLocation"><option value="">Select location</option><option>Remote</option><option>Lagos</option><option>Abuja</option><option>Kano</option><option>Port Harcourt</option><option>Ibadan</option><option>Other</option></select>
+          <div class="error-msg" id="pjLocErr">Please select a location</div>
+        </div>
+        <div class="form-group"><label>Job Type</label>
+          <select id="pjType"><option>One-off</option><option>Contract</option><option>Part-time</option><option>Full-time</option><option>Ongoing</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>Deadline (optional)</label><input type="date" id="pjDeadline" /></div>
+      <div style="display:flex;gap:12px">
+        <button class="form-submit" style="background:rgba(255,255,255,0.08);color:var(--white);flex:0 0 auto;width:auto;padding:14px 20px" onclick="pjBack(2)">← Back</button>
+        <button class="form-submit" style="flex:1" onclick="pjNext(2)">Next: Your Details →</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="form-step" id="pjStep3">
+      <div class="form-group"><label>Your Name *</label><input type="text" id="pjName" placeholder="Ngozi Ezekwesili" /><div class="error-msg" id="pjNameErr">Please enter your name</div></div>
+      <div class="form-group"><label>Email Address *</label><input type="email" id="pjEmail" placeholder="you@example.com" /><div class="error-msg" id="pjEmailErr">Please enter a valid email</div></div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="pjPhone" placeholder="0801 234 5678" /></div>
+      <div style="display:flex;gap:12px">
+        <button class="form-submit" style="background:rgba(255,255,255,0.08);color:var(--white);flex:0 0 auto;width:auto;padding:14px 20px" onclick="pjBack(3)">← Back</button>
+        <button class="form-submit" style="flex:1" onclick="pjSubmit()">Post My Job 🚀</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: BECOME A FREELANCER -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="freelancerModal" onclick="overlayClick(event,'freelancerModal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('freelancerModal')">✕</button>
+    <h2>Start Earning Today 💰</h2>
+    <p class="sub">Create your freelancer profile and get found by clients</p>
+    <div class="form-row">
+      <div class="form-group"><label>First Name</label><input type="text" id="flFirst" placeholder="Halima" /></div>
+      <div class="form-group"><label>Last Name</label><input type="text" id="flLast" placeholder="Musa" /></div>
+    </div>
+    <div class="form-group"><label>Email</label><input type="email" id="flEmail" placeholder="halima@email.com" /></div>
+    <div class="form-group"><label>Phone</label><input type="tel" id="flPhone" placeholder="0801 234 5678" /></div>
+    <div class="form-group"><label>Primary Skill / Category</label>
+      <select id="flSkill">
+        <option value="">What's your main skill?</option>
+        <option>Tech & Dev</option><option>Design</option><option>Writing</option><option>Photography</option>
+        <option>Repairs</option><option>Catering</option><option>Events</option><option>Marketing</option><option>Fashion</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Your Location</label>
+      <select id="flLocation">
+        <option value="">Select your state</option>
+        <option>Lagos</option><option>Abuja (FCT)</option><option>Kano</option><option>Rivers</option><option>Oyo</option><option>Enugu</option><option>Delta</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Brief Bio</label><textarea id="flBio" placeholder="Tell clients about yourself, your experience, and what makes you great at what you do..."></textarea></div>
+    <button class="form-submit" onclick="handleFreelancer()">Create My Profile 🎯</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- JAVASCRIPT -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+// ── MODAL SYSTEM ──
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function overlayClick(e, id) {
+  if (e.target.id === id) closeModal(id);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => {
+      m.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  }
+});
+
+// ── TOAST SYSTEM ──
+function showToast(msg, type = 'info', duration = 3500) {
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-msg">${msg}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+// ── MOBILE MENU ──
+function toggleMobile() {
+  const menu = document.getElementById('mobileMenu');
+  const ham  = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  ham.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobile() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── NAVBAR SCROLL EFFECT ──
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+  const btn = document.getElementById('back-top');
+  btn.classList.toggle('visible', window.scrollY > 400);
+});
+
+// ── SCROLL REVEAL ──
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ── COUNTER ANIMATION ──
+function animateCounter(el) {
+  const target   = parseInt(el.dataset.target);
+  const prefix   = el.dataset.prefix || '';
+  const suffix   = el.dataset.suffix || '';
+  const duration = 1800;
+  const step     = Math.ceil(target / (duration / 16));
+  let current    = 0;
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    // Format: if target >= 1000, show as K
+    if (target >= 1000) {
+      el.innerHTML = `${prefix}${Math.round(current / 1000)}${suffix}`;
+    } else {
+      el.innerHTML = `${prefix}${current}${suffix}`;
+    }
+    if (current >= target) clearInterval(timer);
+  }, 16);
+}
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      statsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-num[data-target]').forEach(el => statsObserver.observe(el));
+
+// ── HERO SEARCH ──
+function doHeroSearch() {
+  const q = document.getElementById('heroSearch').value.trim();
+  if (!q) { showToast('Please enter a search term', 'error'); return; }
+  document.getElementById('search-jobs').value = q;
+  document.getElementById('jobs').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => filterJobs(), 400);
+  showToast(`Searching for "${q}"…`, 'info');
+}
+document.getElementById('heroSearch').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doHeroSearch();
+});
+
+// ── CATEGORY FILTER ──
+let activeCategory = 'All';
+function filterByCategory(el, cat) {
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeCategory = cat;
+  document.getElementById('jobs').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => filterJobs(), 400);
+}
+
+// ── JOB FILTER ──
+function filterJobs() {
+  const q    = document.getElementById('search-jobs').value.toLowerCase().trim();
+  const loc  = document.getElementById('filter-location').value;
+  const type = document.getElementById('filter-type').value;
+  const cards = document.querySelectorAll('#jobsGrid .fjob-card');
+  let count = 0;
+
+  cards.forEach(card => {
+    const cat   = card.dataset.cat   || '';
+    const cloc  = card.dataset.location || '';
+    const ctype = card.dataset.type  || '';
+    const title = (card.dataset.title || '').toLowerCase();
+    const desc  = (card.dataset.desc  || '').toLowerCase();
+    const tags  = card.querySelector('.fjob-tags')?.textContent.toLowerCase() || '';
+
+    const matchCat  = activeCategory === 'All' || cat === activeCategory;
+    const matchLoc  = !loc  || cloc.includes(loc);
+    const matchType = !type || ctype.includes(type);
+    const matchQ    = !q   || title.includes(q) || desc.includes(q) || tags.includes(q) || cat.toLowerCase().includes(q);
+
+    const show = matchCat && matchLoc && matchType && matchQ;
+    card.classList.toggle('hidden', !show);
+    if (show) count++;
+  });
+
+  // show no-results
+  let noRes = document.getElementById('noResults');
+  if (count === 0) {
+    if (!noRes) {
+      noRes = document.createElement('div');
+      noRes.id = 'noResults';
+      noRes.className = 'no-results';
+      noRes.innerHTML = '<span>🔍</span>No jobs match your filters. Try adjusting your search.';
+      document.getElementById('jobsGrid').appendChild(noRes);
+    }
+  } else {
+    noRes?.remove();
+  }
+  document.getElementById('filter-count').textContent = `${count} job${count !== 1 ? 's' : ''} found`;
+}
+
+// ── BOOKMARK ──
+function toggleBookmark(btn, e) {
+  e.stopPropagation();
+  btn.classList.toggle('saved');
+  if (btn.classList.contains('saved')) {
+    showToast('Job saved to your bookmarks 🔖', 'success');
+  } else {
+    showToast('Job removed from bookmarks', 'info');
+  }
+}
+
+// ── APPLY MODAL ──
+function openApply(btn) {
+  const card  = btn.closest('.fjob-card');
+  const title = card.querySelector('.fjob-title').textContent;
+  const type  = card.querySelector('.fjob-type').textContent;
+  const loc   = type.split('·')[0].trim();
+  const jtype = type.split('·')[1]?.trim() || '';
+  document.getElementById('applyJobTitle').textContent = title;
+  document.getElementById('applyJobLoc').textContent   = loc;
+  document.getElementById('applyJobType').textContent  = jtype;
+  openModal('applyModal');
+}
+function handleApply() {
+  const name   = document.getElementById('applyName').value.trim();
+  const email  = document.getElementById('applyEmail').value.trim();
+  const cover  = document.getElementById('applyCover').value.trim();
+  if (!name || !email || !cover) {
+    showToast('Please fill in all required fields', 'error'); return;
+  }
+  if (!email.includes('@')) {
+    showToast('Please enter a valid email address', 'error'); return;
+  }
+  closeModal('applyModal');
+  showToast('Application submitted! The client will be in touch. 🎉', 'success', 5000);
+  // reset
+  ['applyName','applyEmail','applyPhone','applyCover','applyRate'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── AUTH MODAL ──
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('loginForm').style.display   = isLogin ? 'block' : 'none';
+  document.getElementById('signupForm').style.display  = isLogin ? 'none'  : 'block';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+  document.getElementById('authTitle').textContent = isLogin ? 'Welcome Back 👋' : 'Join OddJob.ng 🚀';
+  document.getElementById('authSub').textContent   = isLogin ? 'Log in to your account' : 'Create your free account today';
+}
+function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value.trim();
+  if (!email || !pass) { showToast('Please fill in all fields', 'error'); return; }
+  if (!email.includes('@')) { showToast('Please enter a valid email', 'error'); return; }
+  closeModal('authModal');
+  showToast(`Welcome back! You're logged in. ✅`, 'success');
+}
+function handleSignup() {
+  const first = document.getElementById('signupFirst').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const role  = document.getElementById('signupRole').value;
+  const pass  = document.getElementById('signupPassword').value.trim();
+  if (!first || !email || !role || !pass) { showToast('Please fill in all required fields', 'error'); return; }
+  if (!email.includes('@')) { showToast('Please enter a valid email', 'error'); return; }
+  if (pass.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+  closeModal('authModal');
+  showToast(`Account created! Welcome to OddJob.ng, ${first} 🎉`, 'success', 5000);
+}
+
+// ── POST A JOB (multi-step) ──
+let currentPJStep = 1;
+function pjNext(step) {
+  if (step === 1) {
+    const title = document.getElementById('pjTitle').value.trim();
+    const cat   = document.getElementById('pjCategory').value;
+    const desc  = document.getElementById('pjDesc').value.trim();
+    let ok = true;
+    const te = document.getElementById('pjTitleErr');
+    const ce = document.getElementById('pjCatErr');
+    const de = document.getElementById('pjDescErr');
+    te.classList.toggle('show', !title); document.getElementById('pjTitle').classList.toggle('input-error', !title);
+    ce.classList.toggle('show', !cat);   document.getElementById('pjCategory').classList.toggle('input-error', !cat);
+    de.classList.toggle('show', !desc);  document.getElementById('pjDesc').classList.toggle('input-error', !desc);
+    if (!title || !cat || !desc) return;
+  }
+  if (step === 2) {
+    const budget = document.getElementById('pjBudget').value.trim();
+    const loc    = document.getElementById('pjLocation').value;
+    let be = document.getElementById('pjBudgetErr');
+    let le = document.getElementById('pjLocErr');
+    be.classList.toggle('show', !budget); document.getElementById('pjBudget').classList.toggle('input-error', !budget);
+    le.classList.toggle('show', !loc);   document.getElementById('pjLocation').classList.toggle('input-error', !loc);
+    if (!budget || !loc) return;
+  }
+  goToStep(step + 1);
+}
+function pjBack(step) { goToStep(step - 1); }
+function goToStep(n) {
+  document.getElementById(`pjStep${currentPJStep}`).classList.remove('active');
+  document.getElementById(`pjDot${currentPJStep}`).classList.remove('active');
+  document.getElementById(`pjDot${currentPJStep}`).classList.add('done');
+  if (n > 1) document.getElementById(`pjLine${n-1}`).classList.add('done');
+  currentPJStep = n;
+  document.getElementById(`pjStep${n}`).classList.add('active');
+  document.getElementById(`pjDot${n}`).classList.add('active');
+  document.getElementById(`pjDot${n}`).classList.remove('done');
+}
+function pjSubmit() {
+  const name  = document.getElementById('pjName').value.trim();
+  const email = document.getElementById('pjEmail').value.trim();
+  let ne = document.getElementById('pjNameErr');
+  let ee = document.getElementById('pjEmailErr');
+  ne.classList.toggle('show', !name);  document.getElementById('pjName').classList.toggle('input-error', !name);
+  ee.classList.toggle('show', !email || !email.includes('@'));
+  document.getElementById('pjEmail').classList.toggle('input-error', !email || !email.includes('@'));
+  if (!name || !email || !email.includes('@')) return;
+  closeModal('postJobModal');
+  showToast('Your job has been posted! Proposals will start coming in shortly. 🎉', 'success', 6000);
+  // reset to step 1
+  setTimeout(() => {
+    goToStep(1);
+    ['pjTitle','pjDesc','pjBudget','pjName','pjEmail','pjPhone'].forEach(id => document.getElementById(id).value = '');
+  }, 500);
+}
+
+// ── FREELANCER SIGNUP ──
+function handleFreelancer() {
+  const first = document.getElementById('flFirst').value.trim();
+  const email = document.getElementById('flEmail').value.trim();
+  const skill = document.getElementById('flSkill').value;
+  if (!first || !email || !skill) { showToast('Please fill in all required fields', 'error'); return; }
+  if (!email.includes('@')) { showToast('Please enter a valid email', 'error'); return; }
+  closeModal('freelancerModal');
+  showToast(`Profile created! Welcome to OddJob.ng, ${first}. Start applying to jobs now! 🎯`, 'success', 6000);
+}
+
+// ── INIT ──
+// Set first cat card as active
+document.querySelector('.cat-card[data-cat="All"]').classList.add('active');
+</script>
+</body>
+</html>
